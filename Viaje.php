@@ -70,4 +70,39 @@ class Viaje
 		$this->pasajeros = $pasajeros;
 		return $this;
 	}
+
+	public function agregarPasajero($pasajero)
+	{
+		$pasajeroData = $this->validarPasajero($pasajero);
+		if (!$pasajeroData) {
+			return false;
+		}
+
+		$this->pasajeros[] = $pasajeroData;
+	}
+
+	/**
+	 * Retorna un arreglo asociativo con 3 claves (nombre, apellido, documento)
+	 * si no encuentra ninguno de los 3 o encuentra algun dato erroeno retorna falso
+	 * 
+	 * @param $pasajero Datos del pasajero
+	 * 
+	 * @return array|false
+	 */
+	private function validarPasajero($pasajero)
+	{
+		if (isset($pasajero['nombre']) && $pasajero['nombre'] != '') {
+			if (isset($pasajero['apellido']) && $pasajero['apellido'] != '') {
+				if (isset($pasajero['documento']) && $pasajero['documento'] != '') {
+					return [
+						'nombre' => $pasajero['nombre'],
+						'apellido' => $pasajero['apellido'],
+						'documento' => $pasajero['documento'],
+					];
+				}
+			}
+		}
+
+		return false;
+	}
 }
