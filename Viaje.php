@@ -3,14 +3,71 @@ class Viaje
 {
 	private  $codigo;
 	private  $destino;
-	private  $cant_max_pasajeros;
-	private  $cant_pasajeros;
+	private  $cantMaxPasajeros;
+	private  $cantPasajeros;
+	private $pasajeros;
 
-	public function  __construct($codigo, $destino, $cant_max_pasajeros, $cant_pasajeros)
+	public function  __construct($codigo, $destino, $cantMaxPasajeros, $cantPasajeros, $pasajeros = [])
 	{
 		$this->codigo = $codigo;
 		$this->destino = $destino;
-		$this->cant_max_pasajeros = $cant_max_pasajeros;
-		$this->cant_pasajeros = $cant_pasajeros;
+		$this->cantMaxPasajeros = $cantMaxPasajeros;
+		$this->cantPasajeros = $cantPasajeros;
+		$this->pasajeros = $pasajeros;
+	}
+
+	public function getCodigo()
+	{
+		return $this->codigo;
+	}
+
+	public function setCodigo($codigo)
+	{
+		$this->codigo = $codigo;
+		return $this;
+	}
+
+	public function getDestino()
+	{
+		return $this->destino;
+	}
+
+	public function setDestino($destino)
+	{
+		$this->destino = $destino;
+		return $this;
+	}
+
+	public function getCantMaxPasajeros()
+	{
+		return $this->cantMaxPasajeros;
+	}
+
+	public function setCantMaxPasajeros($cantMaxPasajeros)
+	{
+		$this->cantMaxPasajeros = $cantMaxPasajeros;
+		return $this;
+	}
+
+	public function getCantPasajeros()
+	{
+		return $this->cantPasajeros;
+	}
+
+	public function setCantPasajeros($cantPasajeros)
+	{
+		$this->cantPasajeros = $cantPasajeros;
+		return $this;
+	}
+
+	public function getPasajeros()
+	{
+		return $this->pasajeros;
+	}
+
+	public function setPasajeros($pasajeros)
+	{
+		$this->pasajeros = $pasajeros;
+		return $this;
 	}
 }
