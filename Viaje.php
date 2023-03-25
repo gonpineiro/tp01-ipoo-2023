@@ -4,15 +4,13 @@ class Viaje
 	private  $codigo;
 	private  $destino;
 	private  $cantMaxPasajeros;
-	private  $cantPasajeros;
 	private $pasajeros;
 
-	public function  __construct($codigo, $destino, $cantMaxPasajeros, $cantPasajeros, $pasajeros = [])
+	public function  __construct($codigo, $destino, $cantMaxPasajeros, $pasajeros = [])
 	{
 		$this->codigo = $codigo;
 		$this->destino = $destino;
 		$this->cantMaxPasajeros = $cantMaxPasajeros;
-		$this->cantPasajeros = $cantPasajeros;
 		$this->pasajeros = $pasajeros;
 	}
 
@@ -51,13 +49,7 @@ class Viaje
 
 	public function getCantPasajeros()
 	{
-		return $this->cantPasajeros;
-	}
-
-	public function setCantPasajeros($cantPasajeros): Viaje
-	{
-		$this->cantPasajeros = $cantPasajeros;
-		return $this;
+		return count($this->pasajeros);
 	}
 
 	public function getPasajeros(): array
