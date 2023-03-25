@@ -16,34 +16,34 @@ class Viaje
 		$this->pasajeros = $pasajeros;
 	}
 
-	public function getCodigo()
+	public function getCodigo(): string
 	{
 		return $this->codigo;
 	}
 
-	public function setCodigo($codigo)
+	public function setCodigo($codigo): Viaje
 	{
 		$this->codigo = $codigo;
 		return $this;
 	}
 
-	public function getDestino()
+	public function getDestino(): string
 	{
 		return $this->destino;
 	}
 
-	public function setDestino($destino)
+	public function setDestino($destino): Viaje
 	{
 		$this->destino = $destino;
 		return $this;
 	}
 
-	public function getCantMaxPasajeros()
+	public function getCantMaxPasajeros(): int
 	{
 		return $this->cantMaxPasajeros;
 	}
 
-	public function setCantMaxPasajeros($cantMaxPasajeros)
+	public function setCantMaxPasajeros($cantMaxPasajeros): Viaje
 	{
 		$this->cantMaxPasajeros = $cantMaxPasajeros;
 		return $this;
@@ -54,24 +54,24 @@ class Viaje
 		return $this->cantPasajeros;
 	}
 
-	public function setCantPasajeros($cantPasajeros)
+	public function setCantPasajeros($cantPasajeros): Viaje
 	{
 		$this->cantPasajeros = $cantPasajeros;
 		return $this;
 	}
 
-	public function getPasajeros()
+	public function getPasajeros(): array
 	{
 		return $this->pasajeros;
 	}
 
-	public function setPasajeros($pasajeros)
+	public function setPasajeros($pasajeros): Viaje
 	{
 		$this->pasajeros = $pasajeros;
 		return $this;
 	}
 
-	public function agregarPasajero($pasajero)
+	public function agregarPasajero(array $pasajero): bool
 	{
 		$pasajeroData = $this->validarPasajero($pasajero);
 		if (!$pasajeroData) {
@@ -79,6 +79,7 @@ class Viaje
 		}
 
 		$this->pasajeros[] = $pasajeroData;
+		return true;
 	}
 
 	/**
@@ -89,7 +90,7 @@ class Viaje
 	 * 
 	 * @return array|false
 	 */
-	private function validarPasajero($pasajero)
+	private function validarPasajero(array $pasajero)
 	{
 		if (isset($pasajero['nombre']) && $pasajero['nombre'] != '') {
 			if (isset($pasajero['apellido']) && $pasajero['apellido'] != '') {
