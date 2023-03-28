@@ -61,33 +61,13 @@ function menu()
 function crearViaje(array $viajes): Viaje
 {
 	/* Validamos el ingreso del codigo */
-	$codigo = '';
-	while ($codigo == '' || existeViaje($codigo, $viajes)) {
-		$codigo = readLine("Código: ");
-		if ($codigo == '') {
-			echo "Código invalido\n";
-		} elseif (existeViaje($codigo, $viajes)) {
-			echo "Ya existe un viaje con el código: $codigo\n";
-		}
-	}
+	$codigo = pedirCodigoNuevo($viajes);
 
 	/* Validamos el ingreso del destino */
-	$destino = '';
-	while ($destino == '') {
-		$destino = readLine("Destino: ");
-		if ($destino == '') {
-			echo "Destino invalido\n";
-		}
-	}
+	$destino = pedirDestino();
 
 	/* Validamos el ingreso de maxPasajeros */
-	$maxPasajeros = '';
-	while ($maxPasajeros == '') {
-		$maxPasajeros = readLine("Maximo de pasajeros: ");
-		if ($maxPasajeros == '') {
-			echo "Valor invalido\n";
-		}
-	}
+	$maxPasajeros = pedirMaxPasajeros();
 
 	/* Creamos el viaje */
 	$viaje = new Viaje($codigo, $destino, $maxPasajeros);
@@ -106,6 +86,41 @@ function existeViaje(string $codigo, array $viajes): bool
 
 function modificarDestinoViaje(array $viajes): void
 {
+	$codigo = pedirCodigoExiste($viajes);
+
+	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
+		return $viaje->getCodigo() == $codigo;
+	})[0];
+
+	$destino = pedirDestino();
+
+	$viaje->setDestino($destino);
+}
+
+function listarViajes($viajes): void
+{
+	foreach ($viajes as $viaje) {
+		echo $viaje;
+	}
+}
+
+function pedirCodigoNuevo($viajes): string
+{
+	$codigo = '';
+	while ($codigo == '' || existeViaje($codigo, $viajes)) {
+		$codigo = readLine("Código: ");
+		if ($codigo == '') {
+			echo "Código invalido\n";
+		} elseif (existeViaje($codigo, $viajes)) {
+			echo "Ya existe un viaje con el código: $codigo\n";
+		}
+	}
+
+	return $codigo;
+}
+
+function pedirCodigoExiste($viajes): string
+{
 	$codigo = '';
 	while ($codigo == '' || !existeViaje($codigo, $viajes)) {
 		$codigo = readLine("Código: ");
@@ -116,10 +131,11 @@ function modificarDestinoViaje(array $viajes): void
 		}
 	}
 
-	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
-		return $viaje->getCodigo() == $codigo;
-	})[0];
+	return $codigo;
+}
 
+function pedirDestino(): string
+{
 	$destino = '';
 	while ($destino == '') {
 		$destino = readLine("Destino: ");
@@ -128,12 +144,18 @@ function modificarDestinoViaje(array $viajes): void
 		}
 	}
 
-	$viaje->setDestino($destino);
+	return $destino;
 }
 
-function listarViajes($viajes): void
+function pedirMaxPasajeros(): string
 {
-	foreach ($viajes as $viaje) {
-		echo $viaje;
+	$maxPasajeros = '';
+	while ($maxPasajeros == '') {
+		$maxPasajeros = readLine("Maximo de pasajeros: ");
+		if ($maxPasajeros == '') {
+			echo "Valor invalido\n";
+		}
 	}
+
+	return $maxPasajeros;
 }
