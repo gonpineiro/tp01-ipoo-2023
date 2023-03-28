@@ -6,7 +6,7 @@ class Viaje
 	private  $cantMaxPasajeros;
 	private $pasajeros;
 
-	public function  __construct($codigo, $destino, $cantMaxPasajeros, $pasajeros = [])
+	public function  __construct(string $codigo, string $destino, int $cantMaxPasajeros, array $pasajeros = [])
 	{
 		$this->codigo = $codigo;
 		$this->destino = $destino;
@@ -97,5 +97,13 @@ class Viaje
 		}
 
 		return false;
+	}
+
+	public function __toString()
+	{
+		$codigo = $this->getCodigo();
+		$destino = $this->getDestino();
+		$cantMaxPasajeros = $this->getCantMaxPasajeros();
+		return "Código: $codigo\t Destino: $destino\t Max Pasajeros: $cantMaxPasajeros\n";
 	}
 }
