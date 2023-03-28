@@ -23,6 +23,12 @@ while ($process) {
 			$viajes[] = crearViaje($viajes);
 			break;
 
+		case '2':
+			echo $separador;
+			modificarDestinoViaje($viajes);
+			echo $separador;
+			break;
+
 		case '3':
 			echo $separador;
 			listarViajes($viajes);
@@ -44,7 +50,7 @@ function menu()
 	global $separador;
 
 	echo "[1] - Crear un viaje\n";
-	echo "[2] - Gestionar viajes\n";
+	echo "[2] - Modificar destino de un viaje\n";
 	echo "[3] - Listar viajes\n";
 	echo "[0] - Salir\n\n";
 	echo $separador;
@@ -56,18 +62,13 @@ function crearViaje(array $viajes): Viaje
 {
 	/* Validamos el ingreso del codigo */
 	$codigo = '';
-	while ($codigo == '') {
+	while ($codigo == '' || existeViaje($codigo, $viajes)) {
 		$codigo = readLine("Código: ");
 		if ($codigo == '') {
 			echo "Código invalido\n";
+		} elseif (existeViaje($codigo, $viajes)) {
+			echo "Ya existe un viaje con el código: $codigo\n";
 		}
-
-		$indice = array_search(function ($viaje) use ($codigo) {
-			$vCOfigo = $viaje->getCodigo();
-			return $viaje->getCodigo() == $codigo;
-		}, $viajes);
-
-		$asd = 1;
 	}
 
 	/* Validamos el ingreso del destino */
@@ -92,6 +93,42 @@ function crearViaje(array $viajes): Viaje
 	$viaje = new Viaje($codigo, $destino, $maxPasajeros);
 
 	return $viaje;
+}
+
+function existeViaje(string $codigo, array $viajes): bool
+{
+	$existeCodigo = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
+		return $viaje->getCodigo() == $codigo;
+	});
+
+	return (bool) count($existeCodigo);
+}
+
+function modificarDestinoViaje(array $viajes): void
+{
+	$codigo = '';
+	while ($codigo == '' || !existeViaje($codigo, $viajes)) {
+		$codigo = readLine("Código: ");
+		if ($codigo == '') {
+			echo "Código invalido\n";
+		} elseif (!existeViaje($codigo, $viajes)) {
+			echo "No existe un viaje con el código: $codigo\n";
+		}
+	}
+
+	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
+		return $viaje->getCodigo() == $codigo;
+	})[0];
+
+	$destino = '';
+	while ($destino == '') {
+		$destino = readLine("Destino: ");
+		if ($destino == '') {
+			echo "Destino invalido\n";
+		}
+	}
+
+	$viaje->setDestino($destino);
 }
 
 function listarViajes($viajes): void
