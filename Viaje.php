@@ -19,10 +19,9 @@ class Viaje
 		return $this->codigo;
 	}
 
-	public function setCodigo($codigo): Viaje
+	public function setCodigo($codigo)
 	{
 		$this->codigo = $codigo;
-		return $this;
 	}
 
 	public function getDestino(): string
@@ -30,10 +29,9 @@ class Viaje
 		return $this->destino;
 	}
 
-	public function setDestino($destino): Viaje
+	public function setDestino($destino)
 	{
 		$this->destino = $destino;
-		return $this;
 	}
 
 	public function getCantMaxPasajeros(): int
@@ -41,10 +39,9 @@ class Viaje
 		return $this->cantMaxPasajeros;
 	}
 
-	public function setCantMaxPasajeros($cantMaxPasajeros): Viaje
+	public function setCantMaxPasajeros($cantMaxPasajeros)
 	{
 		$this->cantMaxPasajeros = $cantMaxPasajeros;
-		return $this;
 	}
 
 	public function getCantPasajeros()
@@ -57,46 +54,38 @@ class Viaje
 		return $this->pasajeros;
 	}
 
-	public function setPasajeros($pasajeros): Viaje
+	public function setPasajeros($pasajeros)
 	{
 		$this->pasajeros = $pasajeros;
-		return $this;
 	}
 
-	public function agregarPasajero(array $pasajero): bool
+	public function agregarPasajero(array $pasajero)
 	{
-		$pasajeroData = $this->validarPasajero($pasajero);
-		if (!$pasajeroData) {
+		$bool = true;
+		if ($this->getCantPasajeros() < $this->getCantMaxPasajeros()) {
+			$this->pasajeros[] = $pasajero;
+			return ;
+		} else {
 			return false;
 		}
-
-		$this->pasajeros[] = $pasajeroData;
-		return true;
 	}
 
-	/**
-	 * Retorna un arreglo asociativo con 3 claves (nombre, apellido, documento)
-	 * si no encuentra ninguno de los 3 o encuentra algun dato erroeno retorna falso
-	 * 
-	 * @param $pasajero Datos del pasajero
-	 * 
-	 * @return array|false
-	 */
-	private function validarPasajero(array $pasajero)
+	public function retirarPasajero($documento)
 	{
-		if (isset($pasajero['nombre']) && $pasajero['nombre'] != '') {
-			if (isset($pasajero['apellido']) && $pasajero['apellido'] != '') {
-				if (isset($pasajero['documento']) && $pasajero['documento'] != '') {
-					return [
-						'nombre' => $pasajero['nombre'],
-						'apellido' => $pasajero['apellido'],
-						'documento' => $pasajero['documento'],
-					];
-				}
-			}
-		}
+		$pasajerosNuevos = array_filter($this->getPasajeros(), function ($pasajero) use ($documento) {
+			return $pasajero['documento'] !=  $documento;
+		});
 
-		return false;
+		$this->pasajeros = $pasajerosNuevos;
+	}
+
+	public function existePasajero($documento): bool
+	{
+		$pasajero = array_filter($this->getPasajeros(), function (array $pasajero) use ($documento) {
+			return $pasajero['documento'] == $documento;
+		});
+
+		return (bool) count($pasajero);
 	}
 
 	public function __toString()
@@ -104,6 +93,7 @@ class Viaje
 		$codigo = $this->getCodigo();
 		$destino = $this->getDestino();
 		$cantMaxPasajeros = $this->getCantMaxPasajeros();
-		return "Código: $codigo\t Destino: $destino\t Max Pasajeros: $cantMaxPasajeros\n";
+		$cantPasajeros = $this->getCantPasajeros();
+		return "Código: $codigo\t Destino: $destino\t Max Pasajeros: $cantMaxPasajeros\t Cantidad Pasajeros: $cantPasajeros\n";
 	}
 }
