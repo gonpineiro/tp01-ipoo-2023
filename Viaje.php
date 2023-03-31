@@ -64,10 +64,10 @@ class Viaje
 		$bool = true;
 		if ($this->getCantPasajeros() < $this->getCantMaxPasajeros()) {
 			$this->pasajeros[] = $pasajero;
-			return ;
 		} else {
-			return false;
+			$bool = false;
 		}
+		return $bool;
 	}
 
 	public function retirarPasajero($documento)

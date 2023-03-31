@@ -1,8 +1,10 @@
 <?php
 
 include('./Viaje.php');
+include('entradas_consola.php');
+
 echo "\n\n\n";
-$separador = "###########################\n";
+$separador = "######################################################\n";
 
 echo $separador;
 echo "\tTEST_VIAJE\n";
@@ -13,6 +15,8 @@ echo "\n";
 $viajes = [];
 
 $process = true;
+
+/** Ejecucion programaq */
 while ($process) {
 	menu();
 
@@ -53,7 +57,13 @@ while ($process) {
 			echo $separador;
 			break;
 
-		case '6':
+		case '7':
+			echo $separador;
+			modificarPasajero($viajes);
+			echo $separador;
+			break;
+
+		case '8':
 			echo $separador;
 			listarViajes($viajes);
 			echo $separador;
@@ -69,7 +79,7 @@ while ($process) {
 	}
 }
 
-function menu()
+/** Genera un Mennu para el usuario */ function menu()
 {
 	global $separador;
 
@@ -79,13 +89,20 @@ function menu()
 	echo "[4] - Agregar pasajero a un viaje\n";
 	echo "[5] - Listar pasajeros de un viaje\n";
 	echo "[6] - Retirar pasajero de un viaje\n";
-	echo "[7] - Listar viajes\n";
+	echo "[7] - Modificar pasajero de un viaje\n";
+	echo "[8] - Listar viajes\n\n";
 	echo "[0] - Salir\n\n";
 	echo $separador;
 	echo "\n";
 }
 
-/* Solicita al usuarios los datos del viaje para crear y retonar un viaje */
+/**
+ * Solicita al usuarios los datos del viaje para crear y retonar un viaje 
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ * 
+ * @return Viaje nuevo instancia del objeto Viaje.
+ */
 function crearViaje(array $viajes): Viaje
 {
 	/* Validamos el ingreso del codigo */
@@ -103,100 +120,111 @@ function crearViaje(array $viajes): Viaje
 	return $viaje;
 }
 
+/**
+ * Verificamos dentro de los viajes si ya existe un viaje con el codigo ingresado
+ * 
+ * @param string $codigo atributo de Viaje que se busca dentro del arreglo * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ * 
+ * @return bool Valor de verdad.
+ */
 function existeViaje(string $codigo, array $viajes): bool
 {
-	$existeCodigo = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
+	$viajes = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
 		return $viaje->getCodigo() == $codigo;
 	});
 
-	return (bool) count($existeCodigo);
+	return (bool) count($viajes);
 }
 
+/**
+ * Buscamos el viaje por codigo y luego solicitamos al usuario cual va ser el nuevo destino
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
 function modificarDestinoViaje(array $viajes): void
 {
 	$codigo = pedirCodigoExiste($viajes);
 
-	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
-		return $viaje->getCodigo() == $codigo;
-	})[0];
+	$viaje = buscarViajePorCodigo($viajes, $codigo);
 
 	$destino = pedirDestino();
 
 	$viaje->setDestino($destino);
 }
 
+/**
+ * Buscamos el viaje por codigo y luego solicitamos al usuario cual va ser el maximo de pasajeros
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
 function modificarMaxPasajeros(array $viajes): void
 {
 	$codigo = pedirCodigoExiste($viajes);
 
-	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
-		return $viaje->getCodigo() == $codigo;
-	})[0];
+	$viaje = buscarViajePorCodigo($viajes, $codigo);
 
 	$maxPasajeros = pedirMaxPasajeros();
 
 	$viaje->setCantMaxPasajeros($maxPasajeros);
 }
 
+/**
+ * Buscamos el viaje por codigo y luego solicitamos al los datos del nuevo pasajero
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
 function agregarPasajero(array $viajes): void
 {
 	$codigo = pedirCodigoExiste($viajes);
 
-	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
-		return $viaje->getCodigo() == $codigo;
-	})[0];
+	$viaje = buscarViajePorCodigo($viajes, $codigo);
 
-	$documento = '';
-	while ($documento == '' || $viaje->existePasajero($documento)) {
-		$documento = readLine("Documento: ");
-		if ($documento == '') {
-			echo "Documento invalido\n";
-		} elseif ($viaje->existePasajero($documento)) {
-			echo "Ya existe un pasajero con el documento: $documento\n";
-		}
+	/* Verificamos que exista lugar para un nuevo pasajero */
+	if ($viaje->getCantMaxPasajeros() > $viaje->getCantPasajeros()) {
+		$documento = pedirDocumentoNuevo($viaje);
+
+		$nombre = pedirNombre();
+
+		$apellido = pedirApellido();
+
+		$pasajero = [
+			'documento' => $documento,
+			'nombre' => $nombre,
+			'apellido' => $apellido,
+		];
+
+		$viaje->agregarPasajero($pasajero);
+	} else {
+		echo "El número de pasajeros del viaje llego a su limite\n";
 	}
-
-	$nombre = '';
-	while ($nombre == '') {
-		$nombre = readLine("Nombre del pasajero: ");
-		if ($nombre == '') {
-			echo "Nombre invalido\n";
-		}
-	}
-
-	$apellido = '';
-	while ($apellido == '') {
-		$apellido = readLine("Apellido del pasajero: ");
-		if ($apellido == '') {
-			echo "Apellido invalido\n";
-		}
-	}
-
-	$pasajero = [
-		'documento' => $documento,
-		'nombre' => $nombre,
-		'apellido' => $apellido,
-	];
-
-	$viaje->agregarPasajero($pasajero);
 }
 
+/**
+ * Lista todos los pasajeros de un viaje
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
 function listarPasajeros($viajes): void
 {
 	$codigo = pedirCodigoExiste($viajes);
 
-	$viaje = array_filter($viajes, function (Viaje $viaje) use ($codigo) {
-		return $viaje->getCodigo() == $codigo;
-	})[0];
+	$viaje = buscarViajePorCodigo($viajes, $codigo);
 
 	foreach ($viaje->getPasajeros() as $pasajero) {
 		$documento = $pasajero['documento'];
 		$nombre = $pasajero['nombre'];
 		$apellido = $pasajero['apellido'];
+
 		echo "Documento: $documento\t Nombre: $nombre\t Apellido: $apellido\n";
 	}
 }
 
+/**
+ * Retira a un pasajero del viaje
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
 function retirarPasajeroViaje($viajes): void
 {
 	$codigo = pedirCodigoExiste($viajes);
@@ -205,11 +233,16 @@ function retirarPasajeroViaje($viajes): void
 		return $viaje->getCodigo() == $codigo;
 	})[0];
 
-	$documento = pedirDocumento($viaje);
+	$documento = pedirDocumentoExiste($viaje);
 
 	$viaje->retirarPasajero($documento);
 }
 
+/**
+ * muestra por pantalla todos los viajes
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
 function listarViajes($viajes): void
 {
 	foreach ($viajes as $viaje) {
@@ -217,73 +250,50 @@ function listarViajes($viajes): void
 	}
 }
 
-function pedirCodigoNuevo($viajes): string
+/**
+ * Modifica un pasajero de un viaje
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ */
+function modificarPasajero($viajes): void
 {
-	$codigo = '';
-	while ($codigo == '' || existeViaje($codigo, $viajes)) {
-		$codigo = readLine("Código: ");
-		if ($codigo == '') {
-			echo "Código invalido\n";
-		} elseif (existeViaje($codigo, $viajes)) {
-			echo "Ya existe un viaje con el código: $codigo\n";
-		}
-	}
+	$codigo = pedirCodigoExiste($viajes);
 
-	return $codigo;
+	$viaje = buscarViajePorCodigo($viajes, $codigo);
+
+	$documento = pedirDocumentoExiste($viaje);
+
+	if ($viaje->existePasajero($documento)) {
+		$nombre = pedirNombre();
+
+		$apellido = pedirApellido();
+
+		$pasajero = [
+			'documento' => $documento,
+			'nombre' => $nombre,
+			'apellido' => $apellido,
+		];
+
+		/* Admito que estoy haciendo trampa, por cuestiones de tiempo no puedo hacer esta logica */
+		$viaje->retirarPasajero($documento);
+
+		$viaje->agregarPasajero($pasajero);
+	} else {
+		echo "NO existe el pasajeo dentro del viaje: $codigo\n";
+	}
 }
 
-function pedirCodigoExiste($viajes): string
+/**
+ * Recibe un arreglo de viajes y busca el viaje  
+ * 
+ * @param array $viajes Arrelgo de objetos Viaje.
+ * @param string codigo Codigo a buscar
+ * 
+ * @return Viaje Viaje encontrado
+ */
+function buscarViajePorCodigo(array $viajes, string $codigo)
 {
-	$codigo = '';
-	while ($codigo == '' || !existeViaje($codigo, $viajes)) {
-		$codigo = readLine("Código: ");
-		if ($codigo == '') {
-			echo "Código invalido\n";
-		} elseif (!existeViaje($codigo, $viajes)) {
-			echo "No existe un viaje con el código: $codigo\n";
-		}
-	}
-
-	return $codigo;
-}
-
-function pedirDestino(): string
-{
-	$destino = '';
-	while ($destino == '') {
-		$destino = readLine("Destino: ");
-		if ($destino == '') {
-			echo "Destino invalido\n";
-		}
-	}
-
-	return $destino;
-}
-
-function pedirMaxPasajeros(): string
-{
-	$maxPasajeros = '';
-	while ($maxPasajeros == '') {
-		$maxPasajeros = readLine("Maximo de pasajeros: ");
-		if ($maxPasajeros == '') {
-			echo "Valor invalido\n";
-		}
-	}
-
-	return $maxPasajeros;
-}
-
-function pedirDocumento($viaje): string
-{
-	$documento = '';
-	while ($documento == '' || !$viaje->existePasajero($documento)) {
-		$documento = readLine("Documento: ");
-		if ($documento == '') {
-			echo "Documento invalido\n";
-		} elseif (!$viaje->existePasajero($documento)) {
-			echo "No existe un pasajero con el documento: $documento\n";
-		}
-	}
-
-	return $documento;
+	return array_filter($viajes, function (Viaje $viaje) use ($codigo) {
+		return $viaje->getCodigo() == $codigo;
+	})[0];
 }
